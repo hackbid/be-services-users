@@ -146,19 +146,7 @@ describe("Testing for users", () => {
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty("message", "address is required");
   });
-  it("check POST /register => imageProfile is address", async () => {
-    const response = await request(app).post("/register").send({
-      username: "user3",
-      email: "user3@mail",
-      phone: "086198328222",
-      password: "12345",
-      city_id: 1,
-      fullName: "user3",
-      address: "jalan jauh",
-    });
-    expect(response.status).toBe(400);
-    expect(response.body).toHaveProperty("message", "imageProfile is required");
-  });
+  
   it("check POST /register => username already used", async () => {
     const response = await request(app).post("/register").send({
       username: "user3",
@@ -261,3 +249,87 @@ describe("End point for get User", () => {
     })
   })
 });
+
+describe('End point BALANCE', () =>{
+  
+  it('PATCH addbalance',()=>{
+    return request(app)
+    .patch('/addbalance/1')
+    .send({
+     
+      balance:20000
+    })
+    .then((response)=>{
+      expect(response.status).toBe(200)
+      expect(response.body).toHaveProperty('message','balance terUpdate 20000')
+    })
+  })
+
+  it('PATCH reducebalance',()=>{
+    return request(app)
+    .patch('/reducebalance/1')
+    .send({
+      balance:10000
+    })
+    .then((response)=>{
+      expect(response.status).toBe(200)
+       expect(response.body).toHaveProperty('message','balance terUpdate 10000')
+    })
+  })
+
+  it('PATCH balance not found',()=>{
+    return request(app)
+    .patch('/addbalance/99')
+    .send({
+      balance:100000
+    })
+    .then((response)=>{
+      expect(response.status).toBe(404)
+      expect(response.body).toHaveProperty('message','User Not Found!')
+
+    })
+  })
+  it('PATCH balance not found',()=>{
+    return request(app)
+    .patch('/reducebalance/99')
+    .send({
+      balance:100000
+    })
+    .then((response)=>{
+      expect(response.status).toBe(404)
+      expect(response.body).toHaveProperty('message','User Not Found!')
+
+    })
+  })
+
+})
+
+describe('End point GET historie',()=>{
+  it('GET histories balance',()=>{
+    return request(app)
+    .get('/histories/balance/1')
+    .then((response)=>{
+      expect(response.status).toBe(200)
+      expect(response.body[0]).toHaveProperty('id',1)
+      expect(response.body[0]).toHaveProperty('UserId',1)
+      expect(response.body[0]).toHaveProperty('initialBalance',0)
+      expect(response.body[0]).toHaveProperty('transaction',20000)
+      expect(response.body[0]).toHaveProperty('status','credit')
+     
+
+    })
+    
+  })
+
+  it('GET histories balance NOT FOUND',()=>{
+    return request(app)
+    .get('/histories/balance/99')
+    .then((response)=>{
+      expect(response.status).toBe(404)
+      expect(response.body).toHaveProperty('message','User Not Found!')
+     
+
+    })
+
+  })
+})

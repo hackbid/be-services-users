@@ -1,24 +1,5 @@
 {
-<<<<<<< HEAD
-    "development": {
-        "username": "postgres",
-        "password": "postgres",
-        "database": "hackbidDB",
-        "host": "127.0.0.1",
-        "dialect": "postgres"
-    },
-    "test": {
-        "username": "postgres",
-        "password": "postgres",
-        "database": "hackbidDB_test",
-        "host": "127.0.0.1",
-        "dialect": "postgres"
-    },
-    "production": {
-        "use_env_variable": "DATABASE_URL",
-        "dialect": "postgres"
-    }
-=======
+
   "development": {
     "username": "postgres",
     "password": "postgres",
@@ -37,5 +18,5 @@
     "use_env_variable":"DATABASE_URL",
     "dialect":"postgres"
   }
->>>>>>> 93005a7 (feat: get all history)
+
 }
