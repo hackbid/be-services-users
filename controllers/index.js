@@ -138,6 +138,18 @@ class Controller {
       next(error);
     }
   }
+  static async getHistoryBalance(req, res, next) {
+    console.log("nasuk");
+    try {
+      const { userId } = req.params;
+      const getHistory = await HistoryBalance.findAll({
+        where: { UserId: userId },
+      });
+      res.status(200).json(getHistory);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = Controller;

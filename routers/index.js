@@ -10,4 +10,9 @@ router.get("/users/:id", Controller.getUserId);
 router.patch("/image/:userId", checkUser, Controller.updateImage);
 router.patch("/addbalance/:userId", checkUser, Controller.addBalance);
 router.patch("/reducebalance/:userId", checkUser, Controller.reducedBalance);
+router.get(
+  "/histories/balance/:userId",
+  checkUser,
+  Controller.getHistoryBalance
+);
 module.exports = router;
