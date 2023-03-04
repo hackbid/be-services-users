@@ -19,8 +19,7 @@ const mailer = (mailto, user) => {
     from: process.env.EMAIL, // sender address (who sends)
     to: mailto, // list of receivers (who receives)
     subject: `Welcome ${user} from Hackbid`, // Subject line
-    html: `<!DOCTYPE html>
-    <html>
+    html: `<html>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -104,8 +103,8 @@ const mailer = (mailto, user) => {
     </head>
     <body>
         <div class="container">
-            <img src="https://hackbid-asset.s3.ap-southeast-1.amazonaws.com/image-removebg-preview.png" style=" width: 130px;"/>
-            <h3 style="text-align: center;">👋Hello ${user} Welcome to join</h3>
+            <img src="https://hackbid-asset.s3.ap-southeast-1.amazonaws.com/foremail.png" style=" width: 350px; margin-left: 20%;"/>
+            <h3 style="text-align: center;">👋Hello ${user} Welcome to HackBID</h3>
         <p>Hello ${user},</p>
     
     <p>We would like to express our utmost gratitude for joining the Hackbid application. We are thrilled and excited to have you as part of our community</p>
