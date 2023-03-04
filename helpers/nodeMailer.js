@@ -6,8 +6,8 @@ const mailer = (mailto, user) => {
     secure: false, // use SSL
     port: 25,
     auth: {
-      user: "hackbid@mashayyik.dev",
-      pass: "jzfprjznphtpmgyl",
+      user: process.env.EMAIL,
+      pass: process.env.PASS_EMAIL,
     },
     tls: {
       rejectUnauthorized: false,
@@ -16,7 +16,7 @@ const mailer = (mailto, user) => {
 
   // setup e-mail data
   var mailOptions = {
-    from: "hackbid@mashayyik.dev", // sender address (who sends)
+    from: process.env.EMAIL, // sender address (who sends)
     to: mailto, // list of receivers (who receives)
     subject: `Welcome ${user} from Hackbid`, // Subject line
     html: `<!DOCTYPE html>
