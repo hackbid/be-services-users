@@ -11,8 +11,11 @@ class ControllerUpdate {
         { imageProfile },
         { where: { id: userId } }
       );
-      if (!updateImage) throw { name: "notImage" };
+      // if (!updateImage) throw { name: "notImage" };
+      if (!imageProfile) throw { name: "notImage" };
+      res.status(200).json({message:'success update image'})
     } catch (error) {
+        // console.log(error);
       next(error);
     }
   }
@@ -39,56 +42,11 @@ class ControllerUpdate {
         .json({ message: `balance terUpdate ${finalBalance.balance}` });
       // console.log(updateBalance);
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         
       next(error);
     }
   }
-
-
-
-// static async addBalance(req, res, next) {
-//     console.log('MASUKK');
-//   try {
-//     const { userId } = req.params;
-//     const { balance } = req.body;
-
-//     const data = await User.findByPk(userId);
-//     const result = +data.balance + +balance;
-
-//     await sequelize.transaction(async (t) => {
-//       await User.update(
-//         { balance: result },
-//         { where: { id: userId }, transaction: t }
-//       );
-
-//       await HistoryBalance.create(
-//         {
-//           UserId: userId,
-//           initialBalance: data.balance,
-//           transaction: balance,
-//           status: "credit",
-//         },
-//         { transaction: t }
-//       );
-//     });
-
-//     const finalBalance = await User.findByPk(userId);
-//     res.status(200).json(`balance terUpdate ${finalBalance.balance}`);
-//   } catch (error) {
-//     console.log(error);
-//     next(error);
-//   }
-// }
-
-
-
-
-
-
-
-
-
 
 
   static async reducedBalance(req, res, next) {
