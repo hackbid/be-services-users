@@ -276,6 +276,17 @@ describe('End point BALANCE', () =>{
        expect(response.body).toHaveProperty('message','balance terUpdate 10000')
     })
   })
+  it('PATCH reducebalance Balance Not Enough',()=>{
+    return request(app)
+    .patch('/reducebalance/1')
+    .send({
+      balance:50000
+    })
+    .then((response)=>{
+      expect(response.status).toBe(400)
+       expect(response.body).toHaveProperty('message','balance not enough')
+    })
+  })
 
   it('PATCH balance not found',()=>{
     return request(app)
@@ -332,4 +343,47 @@ describe('End point GET historie',()=>{
     })
 
   })
+})
+
+describe('End point Image',()=>{
+  it('PATCH image in User',()=>{
+    return request(app)
+    .patch('/image/1')
+    .send({
+     
+      imageProfile:'https://res.cloudinary.com/chelsea-production/image/upload/c_fit,h_630,w_1200/v1/site-assets/Backgrounds/Screensaver'
+    })
+    .then((response)=>{
+      expect(response.status).toBe(200)
+      expect(response.body).toHaveProperty('message','success update image')
+    })
+  })
+
+  it('PATCH image in User Not Found',()=>{
+    return request(app)
+    .patch('/image/99')
+    .send({
+     
+      imageProfile:'https://res.cloudinary.com/chelsea-production/image/upload/c_fit,h_630,w_1200/v1/site-assets/Backgrounds/Screensaver'
+    })
+    .then((response)=>{
+      expect(response.status).toBe(404)
+      expect(response.body).toHaveProperty('message','User Not Found!')
+    })
+  })
+  it('PATCH image in User with empty Req Body',()=>{
+    return request(app)
+    .patch('/image/1')
+    .send({
+     
+      imageProfile:''
+    })
+    .then((response)=>{
+      expect(response.status).toBe(400)
+      expect(response.body).toHaveProperty('message',"please insert image")
+    })
+  })
+
+
+
 })
