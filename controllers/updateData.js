@@ -1,5 +1,4 @@
-const { comparePass, hashPass } = require("../helpers/bcrypt");
-const { signToken } = require("../helpers/jwt");
+const midTransaction = require("../helpers/midtrans");
 const { User, HistoryBalance } = require("../models");
 
 class ControllerUpdate {
@@ -13,23 +12,39 @@ class ControllerUpdate {
       );
       // if (!updateImage) throw { name: "notImage" };
       if (!imageProfile) throw { name: "notImage" };
-      res.status(200).json({message:'success update image'})
+      res.status(200).json({ message: "success update image" });
     } catch (error) {
-        // console.log(error);
+      // console.log(error);
+      next(error);
+    }
+  }
+  static async payment(req, res, next) {
+    try {
+      const { balance } = req.body;
+      const { userId } = req.params;
+      const data = await User.findByPk(userId);
+      const dataUser = {
+        ...data,
+      };
+      delete dataUser.password;
+      const Tokentrans = await midTransaction(dataUser, balance);
+      console.log(Tokentrans);
+      res.status(200).json(Tokentrans);
+    } catch (error) {
       next(error);
     }
   }
   static async addBalance(req, res, next) {
-      try {
-          const { userId } = req.params;
-          const { balance } = req.body;
-        //   console.log(req.body);
+    try {
+      const { userId } = req.params;
+      const { balance } = req.body;
       const data = await User.findByPk(userId);
+      const dataUser = {
+        ...data,
+      };
+      delete dataUser.password;
       const result = Number(data.balance) + Number(balance);
-      await User.update(
-        { balance: result },
-        { where: { id: userId } }
-      );
+      await User.update({ balance: result }, { where: { id: userId } });
       await HistoryBalance.create({
         UserId: userId,
         initialBalance: data.balance,
@@ -42,12 +57,11 @@ class ControllerUpdate {
         .json({ message: `balance terUpdate ${finalBalance.balance}` });
       // console.log(updateBalance);
     } catch (error) {
-        // console.log(error);
-        
+      // console.log(error);
+
       next(error);
     }
   }
-
 
   static async reducedBalance(req, res, next) {
     try {
@@ -56,10 +70,7 @@ class ControllerUpdate {
       const data = await User.findByPk(userId);
       const result = Number(data.balance) - Number(balance);
       if (result < 0) throw { name: "balance_0" };
-     await User.update(
-        { balance: result },
-        { where: { id: userId } }
-      );
+      await User.update({ balance: result }, { where: { id: userId } });
       await HistoryBalance.create({
         UserId: userId,
         initialBalance: data.balance,
