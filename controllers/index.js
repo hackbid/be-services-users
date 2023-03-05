@@ -69,7 +69,7 @@ class Controller {
             const { id } = req.params;
 
             const dataId = await User.findByPk(id, {
-                attributes: { exclude: ['password', 'createdAt', 'updatedAt'] },
+                attributes: { exclude: ['password', 'updatedAt'] },
             });
 
             if (!dataId) throw { name: 'not_found' };
