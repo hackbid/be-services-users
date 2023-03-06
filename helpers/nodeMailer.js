@@ -3,14 +3,9 @@ const nodemailer = require('nodemailer');
 const mailer = (mailto, user) => {
     var transporter = nodemailer.createTransport({
         service: 'gmail',
-        secure: true, // use SSL
-        port: process.env.SMTP_PORT,
         auth: {
             user: process.env.EMAIL,
             pass: process.env.PASS_EMAIL,
-        },
-        tls: {
-            rejectUnauthorized: false,
         },
     });
 
@@ -131,7 +126,6 @@ const mailer = (mailto, user) => {
         if (error) {
             return console.log(error);
         }
-
         console.log('Message sent: ' + info.response);
     });
 };
