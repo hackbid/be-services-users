@@ -103,7 +103,7 @@ const mailer = (mailto, user) => {
     </head>
     <body>
         <div class="container">
-            <img src="https://ibb.co/QfYx5p8" style=" width: 350px; margin-left: 20%;"/>
+            <img src="https://cdn.discordapp.com/attachments/1063427855184310293/1082195786504360008/image-removebg-preview1.png" style=" width: 200px"/>
             <h3 style="text-align: center;">👋Hello ${user} Welcome to HackBID</h3>
         <p>Hello ${user},</p>
     
