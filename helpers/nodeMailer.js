@@ -4,7 +4,7 @@ const mailer = (mailto, user) => {
     var transporter = nodemailer.createTransport({
         service: 'gmail',
         secure: true, // use SSL
-        port: 465,
+        port: process.env.SMTP_PORT,
         auth: {
             user: process.env.EMAIL,
             pass: process.env.PASS_EMAIL,
