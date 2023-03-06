@@ -103,7 +103,7 @@ const mailer = (mailto, user) => {
     </head>
     <body>
         <div class="container">
-            <img src="https://hackbid-asset.s3.ap-southeast-1.amazonaws.com/foremail.png" style=" width: 350px; margin-left: 20%;"/>
+            <img src="https://ibb.co/QfYx5p8" style=" width: 350px; margin-left: 20%;"/>
             <h3 style="text-align: center;">👋Hello ${user} Welcome to HackBID</h3>
         <p>Hello ${user},</p>
     
