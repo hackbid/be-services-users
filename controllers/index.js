@@ -1,6 +1,7 @@
 const { comparePass, hashPass } = require("../helpers/bcrypt");
 const { signToken } = require("../helpers/jwt");
-const mailer = require("../helpers/nodeMailer");
+const mailer = "https://mailer-hackbid-production.up.railway.app";
+const axios = require("axios");
 const { User, HistoryBalance } = require("../models");
 class Controller {
   static async register(req, res, next) {
@@ -16,7 +17,13 @@ class Controller {
         city_id,
         address,
       });
-      mailer(regData.email, regData.fullName);
+      if (regData) {
+        await axios.post(mailer + `/register`, {
+          mailto: regData.email,
+          user: regData.fullName,
+        });
+      }
+
       const returnData = {
         ...regData,
         regData: delete regData.dataValues.password,
