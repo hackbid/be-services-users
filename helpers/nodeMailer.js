@@ -1,25 +1,25 @@
-const nodemailer = require("nodemailer");
+const nodemailer = require('nodemailer');
 
 const mailer = (mailto, user) => {
-  var transporter = nodemailer.createTransport({
-    service: "gmail",
-    secure: false, // use SSL
-    port: 25,
-    auth: {
-      user: process.env.EMAIL,
-      pass: process.env.PASS_EMAIL,
-    },
-    tls: {
-      rejectUnauthorized: false,
-    },
-  });
+    var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        secure: true, // use SSL
+        port: 25,
+        auth: {
+            user: process.env.EMAIL,
+            pass: process.env.PASS_EMAIL,
+        },
+        tls: {
+            rejectUnauthorized: false,
+        },
+    });
 
-  // setup e-mail data
-  var mailOptions = {
-    from: process.env.EMAIL, // sender address (who sends)
-    to: mailto, // list of receivers (who receives)
-    subject: `Welcome ${user} from Hackbid`, // Subject line
-    html: `<html>
+    // setup e-mail data
+    var mailOptions = {
+        from: process.env.EMAIL, // sender address (who sends)
+        to: mailto, // list of receivers (who receives)
+        subject: `Welcome ${user} from Hackbid`, // Subject line
+        html: `<html>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -124,16 +124,16 @@ const mailer = (mailto, user) => {
     </body>
     </html>
      `,
-  };
+    };
 
-  // send mail with defined transport object
-  transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      return console.log(error);
-    }
+    // send mail with defined transport object
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            return console.log(error);
+        }
 
-    console.log("Message sent: " + info.response);
-  });
+        console.log('Message sent: ' + info.response);
+    });
 };
 
 module.exports = mailer;
