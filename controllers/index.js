@@ -16,7 +16,7 @@ class Controller {
         city_id,
         address,
       });
-      //   mailer(regData.email, regData.fullName);
+      mailer(regData.email, regData.fullName);
       const returnData = {
         ...regData,
         regData: delete regData.dataValues.password,
