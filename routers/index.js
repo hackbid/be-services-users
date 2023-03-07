@@ -12,11 +12,19 @@ router.get("/users/:id", Controller.getUserId);
 router.patch("/image/:userId", checkUser, ControllerUpdate.updateImage);
 router.post("/payment/:userId", checkUser, ControllerUpdate.payment);
 router.patch("/addbalance/:userId", checkUser, ControllerUpdate.addBalance);
+
 router.patch(
   "/reducebalance/:userId",
   checkUser,
   ControllerUpdate.reducedBalance
 );
+//--------Repoting withdraw
+router.get("/reportwd", ControllerUpdate.getReportWD);
+router.post("/reportwd/:userId", checkUser, ControllerUpdate.reportWD);
+router.patch("/approve/:id", ControllerUpdate.approveWD);
+router.patch("/reportwd/:id", ControllerUpdate.rejectWD);
+//--------Repoting withdraw
+
 router.get(
   "/histories/balance/:userId",
   checkUser,
