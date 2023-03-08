@@ -1,5 +1,5 @@
 const errMsg = (error, req, res, next) => {
-  console.log(error);
+  // console.log(error);
   let statusCode;
   let statusMessage;
   switch (error.name) {
@@ -24,10 +24,10 @@ const errMsg = (error, req, res, next) => {
       statusCode = 404;
       statusMessage = "User Not Found!";
       break;
-    case "notReport":
-      statusCode = 404;
-      statusMessage = "Report Not Found";
-      break;
+    // case "notReport":
+    //   statusCode = 404;
+    //   statusMessage = "Report Not Found";
+    //   break;
     default:
       statusCode = 500;
       statusMessage = "internal server error";

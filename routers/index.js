@@ -10,7 +10,7 @@ router.get("/users", Controller.getUser);
 router.get("/users/:id", Controller.getUserId);
 
 router.patch("/image/:userId", checkUser, ControllerUpdate.updateImage);
-router.post("/payment/:userId", checkUser, ControllerUpdate.payment);
+router.post("/payment/:userId", checkUser,ControllerUpdate.payment);
 router.patch("/addbalance/:userId", checkUser, ControllerUpdate.addBalance);
 
 router.patch(
