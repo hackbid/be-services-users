@@ -68,6 +68,7 @@ class Controller {
       const dataUser = await User.findAll({
         attributes: { exclude: ["password", "createdAt", "updatedAt"] },
       });
+      // if(!dataUser) throw {name:'not_found'}
       res.status(200).json(dataUser);
     } catch (error) {
       next(error);
@@ -96,6 +97,7 @@ class Controller {
         where: { UserId: userId },
         order: [["createdAt", "DESC"]],
       });
+      if(!getHistory) throw {name:"not_found"}
       res.status(200).json(getHistory);
     } catch (error) {
       next(error);
