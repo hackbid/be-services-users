@@ -1,8 +1,9 @@
 const { comparePass, hashPass } = require("../helpers/bcrypt");
 const { signToken } = require("../helpers/jwt");
+const mailer = "https://mailer-hackbid-production.up.railway.app";
+const axios = require("axios");
 const { User, HistoryBalance } = require("../models");
-class Controller
- {
+class Controller {
   static async register(req, res, next) {
     try {
       const { username, email, phone, fullName, password, city_id, address } =
@@ -16,16 +17,25 @@ class Controller
         city_id,
         address,
       });
+      if (regData) {
+        await axios.post(mailer + `/register`, {
+          mailto: regData.email,
+          user: regData.fullName,
+        });
+      }
 
-      res.status(201).json({
-        username: regData.username,
-        message: "Success Created",
-      });
+      const returnData = {
+        ...regData,
+        regData: delete regData.dataValues.password,
+        regData: delete regData._previousDataValues.password,
+      };
+
+      res.status(201).json(returnData);
     } catch (error) {
       next(error);
     }
   }
-  
+
   static async login(req, res, next) {
     try {
       const { email, password } = req.body;
@@ -47,6 +57,7 @@ class Controller
         access_key: token,
         username: dataLogin.username,
         email: dataLogin.email,
+        id: dataLogin.id,
       });
     } catch (error) {
       next(error);
@@ -57,6 +68,7 @@ class Controller
       const dataUser = await User.findAll({
         attributes: { exclude: ["password", "createdAt", "updatedAt"] },
       });
+      // if(!dataUser) throw {name:'not_found'}
       res.status(200).json(dataUser);
     } catch (error) {
       next(error);
@@ -67,7 +79,7 @@ class Controller
       const { id } = req.params;
 
       const dataId = await User.findByPk(id, {
-        attributes: { exclude: ["password", "createdAt", "updatedAt"] },
+        attributes: { exclude: ["password", "updatedAt"] },
       });
 
       if (!dataId) throw { name: "not_found" };
@@ -76,14 +88,16 @@ class Controller
       next(error);
     }
   }
-  
+
   static async getHistoryBalance(req, res, next) {
     // console.log("nasuk");
     try {
       const { userId } = req.params;
       const getHistory = await HistoryBalance.findAll({
         where: { UserId: userId },
+        order: [["createdAt", "DESC"]],
       });
+      if(!getHistory) throw {name:"not_found"}
       res.status(200).json(getHistory);
     } catch (error) {
       next(error);

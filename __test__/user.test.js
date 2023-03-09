@@ -3,6 +3,8 @@ const app = require("../app");
 const { hashPass } = require("../helpers/bcrypt");
 const { signToken } = require("../helpers/jwt");
 const { User, sequelize } = require("../models");
+const ControllerUpdate = require('../controllers/updateData')
+const Midtranst = require('../helpers/midtrans')
 let validToken;
 let invalidToken = "1234aesfasrqwdareaqw";
 const seedUser = [
@@ -65,8 +67,7 @@ describe("Testing for users", () => {
       imageProfile: "test foto",
     });
     expect(response.status).toBe(201);
-    expect(response.body).toHaveProperty("username", "user3");
-    expect(response.body).toHaveProperty("message", "Success Created");
+    expect(response.body.dataValues).toHaveProperty("username", "user3");
   });
   it("check POST /register => username is require", async () => {
     const response = await request(app).post("/register").send({
@@ -146,7 +147,7 @@ describe("Testing for users", () => {
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty("message", "address is required");
   });
-  
+
   it("check POST /register => username already used", async () => {
     const response = await request(app).post("/register").send({
       username: "user3",
@@ -220,116 +221,284 @@ describe("End point for get User", () => {
     const response = await request(app).get("/users");
     expect(response.status).toBe(200);
   });
-  it("GET /users by id", ()=>{
+
+  it("GET /users by id", () => {
     return request(app)
-    .get('/users/1')
-    .then((response)=>{
+      .get("/users/1")
+      .then((response) => {
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty("id", expect.any(Number));
+        expect(response.body).toHaveProperty("username", "user1");
+        expect(response.body).toHaveProperty("phone", "0812907319123");
+        expect(response.body).toHaveProperty("fullName", "user1 test");
+        expect(response.body).toHaveProperty("city_id", 1);
+        expect(response.body).toHaveProperty("address", "jalan buntu");
+        expect(response.body).toHaveProperty("imageProfile", "test image");
+        expect(response.body).toHaveProperty("balance", expect.any(Number));
+      });
+  });
 
-      expect(response.status).toBe(200)
-      expect(response.body).toHaveProperty('id',expect.any(Number))
-      expect(response.body).toHaveProperty('username','user1')
-      expect(response.body).toHaveProperty('phone','0812907319123')
-      expect(response.body).toHaveProperty('fullName',"user1 test")
-      expect(response.body).toHaveProperty('city_id',1)
-      expect(response.body).toHaveProperty('address',"jalan buntu")
-      expect(response.body).toHaveProperty('imageProfile',"test image")
-      expect(response.body).toHaveProperty('balance',expect.any(Number))
-      
-
-    })
-  })
-
-  it('GET/users by id NOT FOUND',()=>{
+  it("GET/users by id NOT FOUND", () => {
     return request(app)
-    .get('/users/99')
-    .then((response)=>{
-      expect(response.status).toBe(404)
-      expect(response.body).toHaveProperty('message','User Not Found!')
-
-    })
-  })
+      .get("/users/99")
+      .then((response) => {
+        expect(response.status).toBe(404);
+        expect(response.body).toHaveProperty("message", "User Not Found!");
+      });
+  });
 });
 
-describe('End point BALANCE', () =>{
-  
-  it('PATCH addbalance',()=>{
+describe("End point BALANCE", () => {
+  it("PATCH addbalance", () => {
     return request(app)
-    .patch('/addbalance/1')
-    .send({
-     
-      balance:20000
-    })
-    .then((response)=>{
-      expect(response.status).toBe(200)
-      expect(response.body).toHaveProperty('message','balance terUpdate 20000')
-    })
-  })
+      .patch("/addbalance/1")
+      .send({
+        balance: 30000,
+      })
+      .then((response) => {
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty(
+          "message",
+          "balance terUpdate 30000"
+        );
+      });
+  });
 
-  it('PATCH reducebalance',()=>{
+  it("PATCH reducebalance", () => {
     return request(app)
-    .patch('/reducebalance/1')
-    .send({
-      balance:10000
-    })
-    .then((response)=>{
-      expect(response.status).toBe(200)
-       expect(response.body).toHaveProperty('message','balance terUpdate 10000')
-    })
-  })
-
-  it('PATCH balance not found',()=>{
+      .patch("/reducebalance/1")
+      .send({
+        balance: 10000,
+      })
+      .then((response) => {
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty(
+          "message",
+          "balance terUpdate 20000"
+        );
+      });
+  });
+  it("PATCH reducebalance Balance Not Enough", () => {
     return request(app)
-    .patch('/addbalance/99')
-    .send({
-      balance:100000
-    })
-    .then((response)=>{
-      expect(response.status).toBe(404)
-      expect(response.body).toHaveProperty('message','User Not Found!')
+      .patch("/reducebalance/1")
+      .send({
+        balance: 50000,
+      })
+      .then((response) => {
+        expect(response.status).toBe(400);
+        expect(response.body).toHaveProperty("message", "balance not enough");
+      });
+  });
 
-    })
-  })
-  it('PATCH balance not found',()=>{
+  it("PATCH balance not found", () => {
     return request(app)
-    .patch('/reducebalance/99')
-    .send({
-      balance:100000
-    })
-    .then((response)=>{
-      expect(response.status).toBe(404)
-      expect(response.body).toHaveProperty('message','User Not Found!')
-
-    })
-  })
-
-})
-
-describe('End point GET historie',()=>{
-  it('GET histories balance',()=>{
+      .patch("/addbalance/99")
+      .send({
+        balance: 100000,
+      })
+      .then((response) => {
+        expect(response.status).toBe(404);
+        expect(response.body).toHaveProperty("message", "User Not Found!");
+      });
+  });
+  it("PATCH balance not found", () => {
     return request(app)
-    .get('/histories/balance/1')
-    .then((response)=>{
-      expect(response.status).toBe(200)
-      expect(response.body[0]).toHaveProperty('id',1)
-      expect(response.body[0]).toHaveProperty('UserId',1)
-      expect(response.body[0]).toHaveProperty('initialBalance',0)
-      expect(response.body[0]).toHaveProperty('transaction',20000)
-      expect(response.body[0]).toHaveProperty('status','credit')
-     
+      .patch("/reducebalance/99")
+      .send({
+        balance: 100000,
+      })
+      .then((response) => {
+        expect(response.status).toBe(404);
+        expect(response.body).toHaveProperty("message", "User Not Found!");
+      });
+  });
+});
 
-    })
-    
-  })
-
-  it('GET histories balance NOT FOUND',()=>{
+describe("End point GET historie", () => {
+  it("GET histories balance", () => {
     return request(app)
-    .get('/histories/balance/99')
-    .then((response)=>{
-      expect(response.status).toBe(404)
-      expect(response.body).toHaveProperty('message','User Not Found!')
-     
+      .get("/histories/balance/1")
+      .then((response) => {
+        expect(response.status).toBe(200);
+        expect(response.body[0]).toHaveProperty("id", 2);
+        expect(response.body[0]).toHaveProperty("UserId", 1);
+        expect(response.body[0]).toHaveProperty("initialBalance", 30000);
+        expect(response.body[0]).toHaveProperty("transaction", 10000);
+        expect(response.body[0]).toHaveProperty("status", "out");
+      });
+  });
 
-    })
+  it("GET histories balance NOT FOUND", () => {
+    return request(app)
+      .get("/histories/balance/99")
+      .then((response) => {
+        expect(response.status).toBe(404);
+        expect(response.body).toHaveProperty("message", "User Not Found!");
+      });
+  });
+});
 
-  })
-})
+describe("End point Image", () => {
+  it("PATCH image in User", () => {
+    return request(app)
+      .patch("/image/1")
+      .send({
+        imageProfile:
+          "https://res.cloudinary.com/chelsea-production/image/upload/c_fit,h_630,w_1200/v1/site-assets/Backgrounds/Screensaver",
+      })
+      .then((response) => {
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty("message", "success update image");
+      });
+  });
+
+  it("PATCH image in User Not Found", () => {
+    return request(app)
+      .patch("/image/99")
+      .send({
+        imageProfile:
+          "https://res.cloudinary.com/chelsea-production/image/upload/c_fit,h_630,w_1200/v1/site-assets/Backgrounds/Screensaver",
+      })
+      .then((response) => {
+        expect(response.status).toBe(404);
+        expect(response.body).toHaveProperty("message", "User Not Found!");
+      });
+  });
+  it("PATCH image in User with empty Req Body", () => {
+    return request(app)
+      .patch("/image/1")
+      .send({
+        imageProfile: "",
+      })
+      .then((response) => {
+        expect(response.status).toBe(400);
+        expect(response.body).toHaveProperty("message", "please insert image");
+      });
+  });
+});
+
+describe("Post Report/Request", () => {
+  it("POST /request balance widthdraw", async () => {
+    const response = await request(app).post("/reportwd/1").send({
+      balance: 1000,
+    });
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("message", "transaction on progress");
+  });
+  it("POST /request balance widthdraw", async () => {
+    const response = await request(app).post("/reportwd/2").send({
+      balance: 1000000,
+    });
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty("message", "balance not enough");
+  });
+
+  it("GET Report/Request balance", () => {
+    return request(app)
+      .get("/reportwd")
+      .then((response) => {
+        expect(response.status).toBe(200);
+        expect(response.body[0]).toHaveProperty("id", 3);
+        expect(response.body[0]).toHaveProperty("UserId", 1);
+        expect(response.body[0]).toHaveProperty("initialBalance", 20000);
+        expect(response.body[0]).toHaveProperty("transaction", 1000);
+        expect(response.body[0]).toHaveProperty("status", "pending");
+      });
+  });
+
+  it("PATCH approved", () => {
+    return request(app)
+      .patch("/approve/2")
+      .then((response) => {
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty(
+          "message",
+          "Withdrawal request approved successfully"
+        );
+      });
+  });
+  it("PATCH approved balance not enough", () => {
+    return request(app)
+      .patch("/approve/1")
+      .then((response) => {
+        expect(response.status).toBe(400);
+        expect(response.body).toHaveProperty("message", "balance not enough");
+      });
+  });
+  it("PATCH rejected", () => {
+    return request(app)
+      .patch("/reportwd/1")
+      .then((response) => {
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty(
+          "message",
+          "success reject withdraw"
+        );
+      });
+  });
+});
+
+describe("Post Midtranst", () => {
+  // beforeAll(async () => {
+  //   await User.create({
+  //     username: "udin",
+  //     email: "udin@mail.com",
+  //     phone: "0812907319123",
+  //     fullName: "udin test",
+  //     password: hashPass("12345"),
+  //     city_id: 1,
+  //     address: "jalan buntu",
+  //     imageProfile: "test image",
+  //     balance:50000
+  //   });
+  // });
+  beforeEach(() => {
+		jest.restoreAllMocks();
+	});
+  // afterAll(async () => {
+	// 	await User.deleteAll();
+	// });
+  it("POST success", (done) => {
+     jest.spyOn(Midtranst, "createToken").mockResolvedValue("weroernefw"); // you can pass your value as arg
+    //  console.log(midTransaction,"TESTTT");
+      request(app)
+      .post("/payment/1")
+      .send({
+           balance: 50000,
+      })
+      .then((response) => {
+        expect(response.status).toBe(200);
+       expect(response.body).toBe("weroernefw");
+       done();
+       
+      })
+      .catch((err) => {
+        console.log(err,"ini di test");
+				done(err);
+			});
+
+  });
+
+  it("POST FAIL", (done) => {
+    //  jest.spyOn(Midtranst, "createToken").mockResolvedValue("weroernefw"); // you can pass your value as arg
+    //  console.log(midTransaction,"TESTTT");
+      request(app)
+      .post("/payment/10000")
+      .send({
+           balance: 50000,
+      })
+      .then((response) => {
+        expect(response.status).toBe(404);
+       expect(response.body).toHaveProperty('message',"User Not Found!");
+       done();
+       
+      })
+      .catch((err) => {
+        // console.log(err,"ini di test");
+				done(err);
+			});
+
+  });
+
+  });
+
