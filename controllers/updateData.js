@@ -1,4 +1,4 @@
-const Midtrast = require("../helpers/midtrans");
+const midTransaction = require("../helpers/midtrans");
 const { User, HistoryBalance } = require("../models");
 
 class ControllerUpdate {
@@ -27,30 +27,9 @@ class ControllerUpdate {
         ...data,
       };
       delete dataUser.password;
-      // console.log("MASUKK");
-      let parameter = {
-        transaction_details: {
-          order_id: `YOUR-ORDERID-${1000 + Math.floor(Math.random() * 777)}-${
-            dataUser.dataValues.username
-          }`,
-          gross_amount: balance,
-        },
-        credit_card: {
-          secure: true,
-        },
-        customer_details: {
-          first_name: dataUser.dataValues.fullName,
-          email: dataUser.dataValues.email,
-          phone: dataUser.dataValues.phone,
-        },
-      };
-
-      const snap = await Midtrast.midTransaction(dataUser,balance)
-      const Tokentrans = await Midtrast.createToken(snap,parameter,dataUser, balance);
-      
+      const Tokentrans = await midTransaction(dataUser, balance);
       res.status(200).json(Tokentrans);
     } catch (error) {
-      // console.log(error);
       next(error);
     }
   }
@@ -142,7 +121,7 @@ class ControllerUpdate {
           { where: { id: findHistory.dataValues.UserId } }
         );
       }
-      res.status(200).json({message:"Withdrawal request approved successfully"});
+      res.status(200).send("Withdrawal request approved successfully");
     } catch (error) {
       next(error);
     }
@@ -152,22 +131,21 @@ class ControllerUpdate {
       const wdReported = await HistoryBalance.findAll({
         where: { status: "pending" },
       });
-      // if (!wdReported) throw { name: "notReport" };
+      if (!wdReported) throw { name: "notReport" };
       res.status(200).json(wdReported);
     } catch (error) {
-      // next(error);
+      next(error);
     }
   }
   static async rejectWD(req, res, next) {
     try {
       const { id } = req.params;
       const findHistory = await HistoryBalance.findByPk(id);
-      console.log(findHistory);
-      // if (!findHistory) throw { name: "notReport" };
+      if (!findHistory) throw { name: "notReport" };
       await HistoryBalance.update({ status: "rejected" }, { where: { id } });
       res.status(200).json({ message: "success reject withdraw" });
     } catch (error) {
-      // next(error);
+      next(error);
     }
   }
 }
